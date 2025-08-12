@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <title>UBike 2.0 站點監控</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiVUJpa2UgMi4wIOermOmBuOeboeaOp+WZqCIsInNob3J0X25hbWUiOiJVQmlrZSDnm6HmjqciLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzI1NjNlYiIsInRoZW1lX2NvbG9yIjoiIzI1NjNlYiIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUIzYVdSMGFEMGlNVEk0SWlCb1pXbG5hSFE5SWpFeU9DSWdkbWxsZDBKdmVEMGlNQ0F3SURFME5DQXhORFFpSUdobGJXNXpQU0pvZEhSd2N6b3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpUGp4d1lYUm9JR1E5SW0wME1TNHhOemczTGpNeU9EQXVNREkzTGpVMU5ERXdMamMzTVRreE9TNDJOemcyTVRBdU56Y3hPUzQzTkRrM09TNHhOalU1T0M0eE5qVTVPQzQwTnpZMk1UQXVORGszTnpBdU1UYzFPVGszTGpNeU9EUXVNREkzZXlJZ1ptbHNiRDBpSXpJMU5qTmxZaUl2UGp4d1lYUm9JR1E5SW0wNU1pNDVOell5T0RBdU1ESTNMakUwTVRrd01TNHdPRE14TnpBdU1UYzFPVGsyTGprNU16WTRPUzR4TkRFNU1qQXVNRGswTWpBdU1EazBNakF1TWpreE56Y3VNekEzWmpFM0xqTXdObVExTWk0ek5EVTFPREZ1TWpRdU1qYzJNVEl4TGpjNE56YzFNakkxTGpnek1EVTFPREF1TURJM2VpSWdabWxzYkQwaUl6WmlabU16WmlJdlBqeHdZWFJvSUdROUltMHhNRE11TkRBeE1qQXVNRGs1TXpjdU9UUXlNekEzTGpNME5qWkVPRFF1TkRJek1qQXVNREkzVWpBdU1ESTNNRE11TkRBeGVpSWdabWxzYkQwaUkwWkdSa1pHUmlJdlBqd3ZjM1puUGc9PSIsInNpemVzIjoiMTQ0eDE0NCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+    
+    <!-- 禁止縮放 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .header .subtitle {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        .container {
+            flex: 1;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .search-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 16px;
+        }
+        
+        .search-input::placeholder {
+            color: #666;
+        }
+        
+        .search-btn {
+            width: 100%;
+            padding: 16px;
+            background: #10b981;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16,185,129,0.3);
+        }
+        
+        .search-btn:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .station-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .station-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .station-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .info-item {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 16px;
+            border-radius: 12px;
+        }
+        
+        .info-number {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .bikes-available {
+            color: #10b981;
+        }
+        
+        .spaces-available {
+            color: #3b82f6;
+        }
+        
+        .station-address {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.4;
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .error {
+            background: rgba(239,68,68,0.9);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.8;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .last-update {
+            text-align: center;
+            opacity: 0.6;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            background: #10b981;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(16,185,129,0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .refresh-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.5);
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .station-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚲 UBike 2.0 監控</h1>
+        <div class="subtitle">新北市公共自行車即時資訊</div>
+    </div>
+    
+    <div class="container">
+        <div class="search-section">
+            <input type="text" class="search-input" id="stationSearch" placeholder="輸入站點名稱 (例如: 板橋車站)">
+            <button class="search-btn" onclick="searchStation()">🔍 搜尋站點</button>
+            
+            <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="testAPI()" style="
+                    flex: 1;
+                    padding: 12px;
+                    background: #3b82f6;
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">🔧 測試API連線</button>
+                
+                <button onclick="showSolutions()" style="
+                    flex: 1;
+                    padding: 12px;
+                    background: #f59e0b;
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">💡 查看解決方案</button>
+            </div>
+            
+            <div style="margin-top: 12px;">
+                <input type="text" placeholder="如果你有自己的API網址，請輸入..." id="customApiUrl" style="
+                    width: 70%;
+                    padding: 10px;
+                    border: none;
+                    border-radius: 6px 0 0 6px;
+                    font-size: 14px;
+                ">
+                <button onclick="setCustomAPI()" style="
+                    width: 30%;
+                    padding: 10px;
+                    background: #10b981;
+                    border: none;
+                    border-radius: 0 6px 6px 0;
+                    color: white;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">設定</button>
+            </div>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+    
+    <button class="refresh-btn" onclick="refreshData()" title="重新整理">
+        <span id="refreshIcon">🔄</span>
+    </button>
+    
+    <script>
+        let currentStations = [];
+        let lastSearchKeyword = '';
+        
+        // 搜尋站點
+        async function searchStation() {
+            const keyword = document.getElementById('stationSearch').value.trim();
+            if (!keyword) {
+                showError('請輸入站點名稱');
+                return;
+            }
+            
+            lastSearchKeyword = keyword;
+            await fetchStationData(keyword);
+        }
+        
+        // 重新整理資料
+        async function refreshData() {
+            if (!lastSearchKeyword) return;
+            
+            const refreshIcon = document.getElementById('refreshIcon');
+            refreshIcon.style.animation = 'spin 1s linear infinite';
+            
+            await fetchStationData(lastSearchKeyword);
+            
+            setTimeout(() => {
+                refreshIcon.style.animation = '';
+            }, 1000);
+        }
+        
+        // 獲取站點資料 (支援自訂API)
+        async function fetchStationData(keyword) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    搜尋中...
+                </div>
+            `;
+            
+            try {
+                let data;
+                let response;
+                let apiUrl;
+                
+                // 優先使用自訂API
+                if (window.customApiUrl) {
+                    apiUrl = window.customApiUrl;
+                    console.log('使用自訂API:', apiUrl);
+                }
+                // 其次使用找到的可用API
+                else if (window.workingApiUrl) {
+                    apiUrl = window.workingApiUrl;
+                    console.log('使用測試通過的API:', apiUrl);
+                }
+                // 最後嘗試直接訪問
+                else {
+                    apiUrl = 'https://data.ntpc.gov.tw/api/datasets/010e5b15-3823-4b20-b401-b1cf000550c5/json';
+                    console.log('嘗試直接API訪問:', apiUrl);
+                }
+                
+                response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    data = await response.json();
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                // 確保data是陣列格式
+                if (!Array.isArray(data)) {
+                    throw new Error('API回應格式不正確 - 需要陣列格式');
+                }
+                
+                console.log(`成功獲取 ${data.length} 筆站點資料`);
+                
+                // 篩選包含關鍵字的站點
+                const filteredStations = data.filter(station => 
+                    station.sna && station.sna.includes(keyword)
+                );
+                
+                currentStations = filteredStations;
+                displayStations(filteredStations);
+                
+            } catch (error) {
+                console.error('API Error:', error);
+                
+                // 根據錯誤類型顯示不同的解決建議
+                let errorMessage = '';
+                let suggestions = '';
+                
+                if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+                    errorMessage = 'CORS跨域限制或網路連線問題';
+                    suggestions = `
+                        <strong>💡 建議解決方案：</strong><br>
+                        1. 點選「💡 查看解決方案」了解詳細說明<br>
+                        2. 使用Vercel等服務部署自己的API代理<br>
+                        3. 暫時使用測試資料體驗功能
+                    `;
+                } else if (error.message.includes('HTTP')) {
+                    errorMessage = `API伺服器回應錯誤: ${error.message}`;
+                    suggestions = `
+                        <strong>💡 可能原因：</strong><br>
+                        • API伺服器暫時無法使用<br>
+                        • 網址設定不正確<br>
+                        • API格式已變更
+                    `;
+                } else {
+                    errorMessage = error.message;
+                    suggestions = '請檢查網路連線或API設定';
+                }
+                
+                showError(`
+                    <strong>🚫 無法獲取即時資料</strong><br><br>
+                    錯誤原因: ${errorMessage}<br><br>
+                    ${suggestions}<br><br>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
+                        <button onclick="showSolutions()" style="
+                            background: #f59e0b; 
+                            color: white; 
+                            border: none; 
+                            padding: 10px 16px; 
+                            border-radius: 6px; 
+                            cursor: pointer;
+                            font-size: 13px;
+                        ">💡 查看解決方案</button>
+                        
+                        <button onclick="useTestData('${keyword}')" style="
+                            background: #10b981; 
+                            color: white; 
+                            border: none; 
+                            padding: 10px 16px; 
+                            border-radius: 6px; 
+                            cursor: pointer;
+                            font-size: 13px;
+                        ">🧪 使用測試資料</button>
+                    </div>
+                `);
+            }
+        }
+        
+        // 使用測試資料
+        function useTestData(keyword) {
+            const data = generateTestData(keyword);
+            const filteredStations = data.filter(station => 
+                station.sna && station.sna.includes(keyword)
+            );
+            
+            currentStations = filteredStations;
+            displayStations(filteredStations);
+        }
+        
+        // 生成測試資料 (模擬真實API)
+        function generateTestData(keyword) {
+            const testStations = [
+                {
+                    sno: "500101001",
+                    sna: "YouBike2.0_板橋車站",
+                    tot: 40,
+                    sbi: 12,
+                    bemp: 28,
+                    sarea: "板橋區",
+                    ar: "新北市板橋區縣民大道二段7號(板橋車站)",
+                    act: "1"
+                },
+                {
+                    sno: "500101002", 
+                    sna: "YouBike2.0_新埔站1號出口",
+                    tot: 32,
+                    sbi: 8,
+                    bemp: 24,
+                    sarea: "板橋區",
+                    ar: "新北市板橋區民生路三段17號前方",
+                    act: "1"
+                },
+                {
+                    sno: "500101003",
+                    sna: "YouBike2.0_府中站",
+                    tot: 28,
+                    sbi: 5,
+                    bemp: 23,
+                    sarea: "板橋區", 
+                    ar: "新北市板橋區府中路29號對面",
+                    act: "1"
+                },
+                {
+                    sno: "500101004",
+                    sna: "YouBike2.0_三重站",
+                    tot: 36,
+                    sbi: 15,
+                    bemp: 21,
+                    sarea: "三重區",
+                    ar: "新北市三重區重新路四段17號前",
+                    act: "1"
+                },
+                {
+                    sno: "500101005",
+                    sna: "YouBike2.0_新莊站",
+                    tot: 30,
+                    sbi: 7,
+                    bemp: 23,
+                    sarea: "新莊區",
+                    ar: "新北市新莊區新樹路108號對面",
+                    act: "1"
+                }
+            ];
+            
+            return testStations;
+        }
+        
+        // 測試API連線
+        async function testAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    正在測試API連線...
+                </div>
+            `;
+            
+            const apiUrls = [
+                {
+                    name: '新北市官方API',
+                    url: 'https://data.ntpc.gov.tw/api/datasets/010e5b15-3823-4b20-b401-b1cf000550c5/json'
+                },
+                {
+                    name: '政府資料開放平台',
+                    url: 'https://data.gov.tw/api/v1/rest/datastore/382000000A-000352-001'
+                },
+                {
+                    name: 'YouBike官方API',
+                    url: 'https://apis.youbike.com.tw/json/station-yb2.json'
+                }
+            ];
+            
+            let testResults = '<div class="station-card"><h3>🔧 API連線測試結果</h3><br>';
+            
+            for (const api of apiUrls) {
+                try {
+                    console.log(`測試 ${api.name}: ${api.url}`);
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超時
+                    
+                    const response = await fetch(api.url, {
+                        signal: controller.signal,
+                        mode: 'cors',
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                        }
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    const status = response.status;
+                    const statusText = response.statusText;
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const dataLength = Array.isArray(data) ? data.length : Object.keys(data).length;
+                        
+                        testResults += `
+                            <div style="background: rgba(16,185,129,0.2); padding: 12px; margin: 8px 0; border-radius: 8px; border-left: 4px solid #10b981;">
+                                <strong>✅ ${api.name}</strong><br>
+                                狀態: ${status} ${statusText}<br>
+                                資料筆數: ${dataLength}<br>
+                                <small style="opacity: 0.8;">${api.url}</small>
+                            </div>
+                        `;
+                        
+                        // 如果成功，使用這個API
+                        if (Array.isArray(data) && data.length > 0) {
+                            console.log(`✅ 找到可用的API: ${api.name}`);
+                            window.workingApiUrl = api.url;
+                        }
+                    } else {
+                        throw new Error(`HTTP ${status}: ${statusText}`);
+                    }
+                } catch (error) {
+                    console.error(`❌ ${api.name} 失敗:`, error);
+                    
+                    let errorMsg = error.message;
+                    if (error.name === 'AbortError') {
+                        errorMsg = '請求超時 (5秒)';
+                    } else if (error.message.includes('CORS')) {
+                        errorMsg = 'CORS跨域限制';
+                    } else if (error.message.includes('Failed to fetch')) {
+                        errorMsg = '網路連線失敗或CORS限制';
+                    }
+                    
+                    testResults += `
+                        <div style="background: rgba(239,68,68,0.2); padding: 12px; margin: 8px 0; border-radius: 8px; border-left: 4px solid #ef4444;">
+                            <strong>❌ ${api.name}</strong><br>
+                            錯誤: ${errorMsg}<br>
+                            <small style="opacity: 0.8;">${api.url}</small>
+                        </div>
+                    `;
+                }
+            }
+            
+            testResults += `
+                <br>
+                <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px;">
+                    <strong>💡 說明：</strong><br>
+                    • ✅ 表示API可以正常訪問<br>
+                    • ❌ 表示有CORS限制或其他問題<br>
+                    • 如果都失敗，可能需要使用代理服務或後端API
+                </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = testResults;
+        }
+        
+        // 測試CORS代理服務
+        async function testCORSProxy() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    正在測試代理服務...
+                </div>
+            `;
+            
+            const proxyServices = [
+                {
+                    name: 'AllOrigins',
+                    getUrl: (target) => `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`
+                },
+                {
+                    name: 'CORS Anywhere (需要啟用)',
+                    getUrl: (target) => `https://cors-anywhere.herokuapp.com/${target}`
+                },
+                {
+                    name: 'Public CORS Proxy',
+                    getUrl: (target) => `https://corsproxy.io/?${encodeURIComponent(target)}`
+                }
+            ];
+            
+            const targetUrl = 'https://data.ntpc.gov.tw/api/datasets/010e5b15-3823-4b20-b401-b1cf000550c5/json';
+            let testResults = '<div class="station-card"><h3>🌐 CORS代理服務測試</h3><br>';
+            
+            for (const proxy of proxyServices) {
+                try {
+                    const proxyUrl = proxy.getUrl(targetUrl);
+                    console.log(`測試 ${proxy.name}: ${proxyUrl}`);
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超時
+                    
+                    const response = await fetch(proxyUrl, {
+                        signal: controller.signal,
+                        method: 'GET'
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (response.ok) {
+                        let data = await response.text();
+                        
+                        // AllOrigins包裝格式
+                        if (proxy.name === 'AllOrigins') {
+                            const parsed = JSON.parse(data);
+                            data = parsed.contents;
+                        }
+                        
+                        const jsonData = JSON.parse(data);
+                        const dataLength = Array.isArray(jsonData) ? jsonData.length : Object.keys(jsonData).length;
+                        
+                        testResults += `
+                            <div style="background: rgba(16,185,129,0.2); padding: 12px; margin: 8px 0; border-radius: 8px; border-left: 4px solid #10b981;">
+                                <strong>✅ ${proxy.name}</strong><br>
+                                狀態: 成功獲取資料<br>
+                                資料筆數: ${dataLength}<br>
+                                <button onclick="useProxy('${proxy.name}', '${proxyUrl}')" style="
+                                    background: #10b981;
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 16px;
+                                    border-radius: 4px;
+                                    cursor: pointer;
+                                    margin-top: 8px;
+                                    font-size: 12px;
+                                ">使用此代理</button>
+                            </div>
+                        `;
+                        
+                        window.workingProxyService = proxy;
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error(`❌ ${proxy.name} 失敗:`, error);
+                    
+                    let errorMsg = error.message;
+                    if (error.name === 'AbortError') {
+                        errorMsg = '請求超時 (10秒)';
+                    }
+                    
+                    testResults += `
+                        <div style="background: rgba(239,68,68,0.2); padding: 12px; margin: 8px 0; border-radius: 8px; border-left: 4px solid #ef4444;">
+                            <strong>❌ ${proxy.name}</strong><br>
+                            錯誤: ${errorMsg}
+                        </div>
+                    `;
+                }
+            }
+            
+            testResults += `
+                <br>
+                <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px;">
+                    <strong>💡 使用說明：</strong><br>
+                    • 代理服務可以繞過CORS限制<br>
+                    • 找到可用的代理後，點選「使用此代理」<br>
+                    • 之後的搜尋會自動使用該代理服務
+                </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = testResults;
+        }
+        
+        // 顯示解決方案
+        function showSolutions() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="station-card">
+                    <h3>💡 CORS問題解決方案</h3>
+                    <br>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                        <h4 style="margin-bottom: 12px;">🚫 問題原因：</h4>
+                        <p style="line-height: 1.5; opacity: 0.9;">
+                        瀏覽器的CORS (跨域資源共享) 安全政策阻止網頁直接訪問不同網域的API。
+                        這是正常的安全機制，政府API通常都有這個限制。
+                        </p>
+                    </div>
+                    
+                    <div style="background: rgba(16,185,129,0.2); padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #10b981;">
+                        <h4 style="margin-bottom: 12px;">✅ 方案1：使用Vercel部署 (推薦)</h4>
+                        <p style="line-height: 1.5; margin-bottom: 12px;">
+                        • 免費、簡單、無需維護伺服器<br>
+                        • 自動處理CORS問題<br>
+                        • 全球CDN加速
+                        </p>
+                        <button onclick="window.open('https://vercel.com', '_blank')" style="
+                            background: #000; 
+                            color: white; 
+                            border: none; 
+                            padding: 8px 16px; 
+                            border-radius: 4px; 
+                            cursor: pointer;
+                            font-size: 12px;
+                        ">前往 Vercel 網站</button>
+                    </div>
+                    
+                    <div style="background: rgba(59,130,246,0.2); padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #3b82f6;">
+                        <h4 style="margin-bottom: 12px;">🖥️ 方案2：本地Node.js伺服器</h4>
+                        <p style="line-height: 1.5; margin-bottom: 12px;">
+                        • 完全控制，適合開發測試<br>
+                        • 需要安裝Node.js和相關套件<br>
+                        • 本地運行，速度快
+                        </p>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; font-family: monospace; font-size: 12px;">
+                        npm install express cors node-fetch@2<br>
+                        node server.js
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(245,158,11,0.2); padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #f59e0b;">
+                        <h4 style="margin-bottom: 12px;">📱 方案3：原生App方式</h4>
+                        <p style="line-height: 1.5; margin-bottom: 12px;">
+                        • 將PWA安裝到桌面<br>
+                        • 某些情況下CORS限制會減少<br>
+                        • 使用Safari的"加入主畫面"功能
+                        </p>
+                    </div>
+                    
+                    <div style="background: rgba(139,92,246,0.2); padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #8b5cf6;">
+                        <h4 style="margin-bottom: 12px;">🔧 方案4：自己的API伺服器</h4>
+                        <p style="line-height: 1.5; margin-bottom: 12px;">
+                        如果你已經有自己的API伺服器，可以在上方輸入網址：<br>
+                        例如：<code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px;">
+                        https://your-domain.com/api/ubike</code>
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="useTestData('板橋車站')" style="
+                            background: #10b981; 
+                            color: white; 
+                            border: none; 
+                            padding: 12px 24px; 
+                            border-radius: 8px; 
+                            cursor: pointer;
+                            font-size: 14px;
+                        ">🧪 先用測試資料體驗功能</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 設定自訂API
+        function setCustomAPI() {
+            const customUrl = document.getElementById('customApiUrl').value.trim();
+            if (!customUrl) {
+                alert('請輸入有效的API網址');
+                return;
+            }
+            
+            // 簡單的URL驗證
+            try {
+                new URL(customUrl);
+                window.customApiUrl = customUrl;
+                alert('✅ 已設定自訂API！\n現在可以嘗試搜尋站點。');
+                document.getElementById('customApiUrl').value = '';
+            } catch (error) {
+                alert('❌ 無效的網址格式，請檢查後重新輸入。');
+            }
+        }
+        
+        // 顯示站點資訊
+        function displayStations(stations) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (stations.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        找不到包含「${lastSearchKeyword}」的站點<br>
+                        請嘗試使用其他關鍵字
+                    </div>
+                `;
+                return;
+            }
+            
+            const stationsHTML = stations.map(station => `
+                <div class="station-card">
+                    <div class="station-name">
+                        📍 ${station.sna || '未知站點'}
+                    </div>
+                    
+                    <div class="station-info">
+                        <div class="info-item">
+                            <div class="info-number bikes-available">${station.sbi || 0}</div>
+                            <div class="info-label">可借車輛</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-number spaces-available">${station.bemp || 0}</div>
+                            <div class="info-label">可還空位</div>
+                        </div>
+                    </div>
+                    
+                    <div class="station-address">
+                        📍 ${station.ar || '地址資訊未提供'}
+                    </div>
+                    
+                    ${station.act === '0' ? '<div style="color: #ef4444; font-weight: 600; margin-top: 12px; text-align: center;">⚠️ 站點暫停營運</div>' : ''}
+                </div>
+            `).join('');
+            
+            resultsDiv.innerHTML = stationsHTML + `
+                <div class="last-update">
+                    最後更新：${new Date().toLocaleString('zh-TW')}
+                </div>
+            `;
+        }
+        
+        // 顯示錯誤訊息
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        // Enter鍵搜尋
+        document.getElementById('stationSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStation();
+            }
+        });
+        
+        // PWA安裝提示
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // 顯示安裝提示
+            if (!localStorage.getItem('pwaInstallPromptShown')) {
+                setTimeout(() => {
+                    if (confirm('要將此應用程式安裝到您的裝置嗎？')) {
+                        installPWA();
+                    }
+                    localStorage.setItem('pwaInstallPromptShown', 'true');
+                }, 3000);
+            }
+        });
+        
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                });
+            }
+        }
+        
+        // 自動重新整理 (每30秒)
+        setInterval(() => {
+            if (lastSearchKeyword && currentStations.length > 0) {
+                refreshData();
+            }
+        }, 30000);
+        
+        // 預設搜尋一些常見站點作為示範
+        window.addEventListener('load', () => {
+            // 3秒後自動搜尋板橋車站作為示範
+            setTimeout(() => {
+                if (!lastSearchKeyword) {
+                    document.getElementById('stationSearch').value = '板橋車站';
+                    searchStation();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
