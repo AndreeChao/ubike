@@ -247,7 +247,7 @@
     </div>
     
     <script>
-        const API_URL = 'https://data.ntpc.gov.tw/api/datasets/010e5b15-3823-4b20-b401-b1cf000550c5/json';
+        const API_URL = 'https://cors-anywhere.herokuapp.com/https://data.ntpc.gov.tw/api/datasets/010e5b15-3823-4b20-b401-b1cf000550c5/json';
         
         async function fetchStationData(keyword) {
             const resultsDiv = document.getElementById('results');
@@ -300,7 +300,7 @@
             
             const testUrls = [
                 { name: '新北市API', url: API_URL },
-                { name: 'YouBike官方API', url: 'https://apis.youbike.com.tw/json/station-yb2.json' }
+                { name: 'YouBike官方API', url: 'https://cors-anywhere.herokuapp.com/https://apis.youbike.com.tw/json/station-yb2.json' }
             ];
             
             let resultsHTML = '<div class="station-card"><h3>🔧 API測試結果</h3>';
