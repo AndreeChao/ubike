@@ -5,18 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#2563eb">
     <title>UBike 2.0 站點監控</title>
-    
     <!-- 禁止縮放 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <style>
         /* 原始UI樣式保持不變 */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -26,186 +19,54 @@
             color: white;
             overflow-x: hidden;
         }
-        
-        .header {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .header .subtitle {
-            opacity: 0.8;
-            font-size: 14px;
-        }
-        
-        .container {
-            flex: 1;
-            padding: 20px;
-            max-width: 500px;
-            width: 100%;
-            margin: 0 auto;
-        }
-        
+        .header { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .header h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+        .header .subtitle { opacity: 0.8; font-size: 14px; }
+        .container { flex: 1; padding: 20px; max-width: 500px; width: 100%; margin: 0 auto; }
         .search-section {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+            border-radius: 16px; padding: 20px; margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.2);
         }
-        
         .search-input {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.9);
-            color: #333;
-            font-size: 16px;
-            outline: none;
-            margin-bottom: 16px;
+            width: 100%; padding: 16px; border: none; border-radius: 12px;
+            background: rgba(255,255,255,0.9); color: #333; font-size: 16px;
+            outline: none; margin-bottom: 16px;
         }
-        
-        .search-input::placeholder {
-            color: #666;
-        }
-        
+        .search-input::placeholder { color: #666; }
         .search-btn {
-            width: 100%;
-            padding: 16px;
-            background: #10b981;
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            width: 100%; padding: 16px; background: #10b981; border: none;
+            border-radius: 12px; color: white; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease;
         }
-        
         .search-btn:hover {
-            background: #059669;
-            transform: translateY(-2px);
+            background: #059669; transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(16,185,129,0.3);
         }
-        
-        .search-btn:disabled {
-            background: #6b7280;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
+        .search-btn:disabled { background: #6b7280; cursor: not-allowed; transform: none; }
         .station-card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 16px;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+            border-radius: 20px; padding: 24px; margin-bottom: 16px;
             border: 1px solid rgba(255,255,255,0.2);
             animation: slideUp 0.5s ease-out;
         }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .station-name {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .station-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        
-        .info-item {
-            text-align: center;
-            background: rgba(255,255,255,0.1);
-            padding: 16px;
-            border-radius: 12px;
-        }
-        
-        .info-number {
-            font-size: 32px;
-            font-weight: 700;
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-        
-        .info-label {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-        
-        .bikes-available {
-            color: #10b981;
-        }
-        
-        .spaces-available {
-            color: #3b82f6;
-        }
-        
-        .station-address {
-            font-size: 14px;
-            opacity: 0.8;
-            line-height: 1.4;
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 8px;
-        }
-        
-        .error {
-            background: rgba(239,68,68,0.9);
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            opacity: 0.8;
-        }
-        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .station-name { font-size: 20px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .station-info { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .info-item { text-align: center; background: rgba(255,255,255,0.1); padding: 16px; border-radius: 12px; }
+        .info-number { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+        .info-label { font-size: 14px; opacity: 0.8; }
+        .bikes-available { color: #10b981; }
+        .spaces-available { color: #3b82f6; }
+        .station-address { font-size: 14px; opacity: 0.8; line-height: 1.4; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; }
+        .error { background: rgba(239,68,68,0.9); color: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; text-align: center; }
+        .loading { text-align: center; padding: 40px; opacity: 0.8; }
         .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
+            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .last-update {
-            text-align: center;
-            opacity: 0.6;
-            font-size: 12px;
-            margin-top: 20px;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .last-update { text-align: center; opacity: 0.6; font-size: 12px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -213,7 +74,6 @@
         <h1>🚲 UBike 2.0 監控</h1>
         <div class="subtitle">新北市公共自行車即時資訊</div>
     </div>
-    
     <div class="container">
         <div class="search-section">
             <input type="text" class="search-input" id="stationSearch" placeholder="輸入站點名稱 (例如: 板橋車站)">
@@ -229,7 +89,6 @@
                     font-size: 14px;
                     cursor: pointer;
                 ">🔧 測試API連線</button>
-                
                 <button onclick="showSolutions()" style="
                     flex: 1;
                     padding: 12px;
@@ -242,13 +101,12 @@
                 ">💡 查看解決方案</button>
             </div>
         </div>
-        
         <div id="results"></div>
     </div>
-    
     <script>
-        const API_URL = 'https://cors-anywhere.herokuapp.com/https://data.ntpc.gov.tw/api/datasets/010e5b15-3823-4b20-b401-b1cf000550c5/json';
-        
+        const PROXY_URL_1 = 'https://你的專案域名/api/proxy1';
+        const PROXY_URL_2 = 'https://你的專案域名/api/proxy2';
+
         async function fetchStationData(keyword) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `
@@ -257,18 +115,15 @@
                     搜尋中...
                 </div>
             `;
-            
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(PROXY_URL_1);
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
                 const data = await response.json();
                 const filteredStations = data.filter(station =>
                     station.sna && station.sna.includes(keyword)
                 );
-                
                 displayStations(filteredStations);
             } catch (error) {
                 console.error('API Error:', error);
@@ -279,16 +134,7 @@
                 `);
             }
         }
-        
-        function searchStation() {
-            const keyword = document.getElementById('stationSearch').value.trim();
-            if (!keyword) {
-                showError('請輸入站點名稱');
-                return;
-            }
-            fetchStationData(keyword);
-        }
-        
+
         async function testAPI() {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `
@@ -297,14 +143,11 @@
                     正在測試API連線...
                 </div>
             `;
-            
             const testUrls = [
-                { name: '新北市API', url: API_URL },
-                { name: 'YouBike官方API', url: 'https://cors-anywhere.herokuapp.com/https://apis.youbike.com.tw/json/station-yb2.json' }
+                { name: '新北市API Proxy', url: PROXY_URL_1 },
+                { name: 'YouBike官方API Proxy', url: PROXY_URL_2 }
             ];
-            
             let resultsHTML = '<div class="station-card"><h3>🔧 API測試結果</h3>';
-            
             for (const api of testUrls) {
                 try {
                     const response = await fetch(api.url);
@@ -317,14 +160,12 @@
                     resultsHTML += `<div>❌ ${api.name} - 錯誤: ${error.message}</div>`;
                 }
             }
-            
             resultsHTML += '</div>';
             resultsDiv.innerHTML = resultsHTML;
         }
-        
+
         function displayStations(stations) {
             const resultsDiv = document.getElementById('results');
-            
             if (stations.length === 0) {
                 resultsDiv.innerHTML = `
                     <div class="error">
@@ -334,7 +175,6 @@
                 `;
                 return;
             }
-            
             const stationsHTML = stations.map(station => `
                 <div class="station-card">
                     <div class="station-name">📍 ${station.sna || '未知站點'}</div>
@@ -352,14 +192,13 @@
                     ${station.act === '0' ? '<div style="color: #ef4444; font-weight: 600; margin-top: 12px; text-align: center;">⚠️ 站點暫停營運</div>' : ''}
                 </div>
             `).join('');
-            
             resultsDiv.innerHTML = stationsHTML + `
                 <div class="last-update">
                     最後更新：${new Date().toLocaleString('zh-TW')}
                 </div>
             `;
         }
-        
+
         function showError(message) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `<div class="error">${message}</div>`;
